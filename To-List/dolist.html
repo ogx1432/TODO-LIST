@@ -1,0 +1,991 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow - Professional Task Management</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            /* Light theme */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border-light: #e2e8f0;
+            --border-medium: #cbd5e1;
+            --accent-primary: #3b82f6;
+            --accent-hover: #2563eb;
+            --accent-light: rgba(59, 130, 246, 0.1);
+            --success: #10b981;
+            --success-light: rgba(16, 185, 129, 0.1);
+            --warning: #f59e0b;
+            --warning-light: rgba(245, 158, 11, 0.1);
+            --danger: #ef4444;
+            --danger-light: rgba(239, 68, 68, 0.1);
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #64748b;
+            --border-light: #334155;
+            --border-medium: #475569;
+            --accent-primary: #60a5fa;
+            --accent-hover: #3b82f6;
+            --accent-light: rgba(96, 165, 250, 0.1);
+            --success: #34d399;
+            --success-light: rgba(52, 211, 153, 0.1);
+            --warning: #fbbf24;
+            --warning-light: rgba(251, 191, 36, 0.1);
+            --danger: #f87171;
+            --danger-light: rgba(248, 113, 113, 0.1);
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-size: 14px;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 32px 16px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 48px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--accent-primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.025em;
+        }
+
+        .theme-toggle {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            font-size: 16px;
+        }
+
+        .theme-toggle:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--border-medium);
+        }
+
+        /* Input Section */
+        .input-section {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .input-field {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px var(--accent-light);
+        }
+
+        .input-field::placeholder {
+            color: var(--text-muted);
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-light);
+        }
+
+        .btn-ghost:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .btn-danger {
+            background: transparent;
+            color: var(--danger);
+            border: 1px solid transparent;
+            padding: 8px;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+        }
+
+        .btn-danger:hover {
+            background: var(--danger-light);
+            border-color: var(--danger);
+        }
+
+        .reminder-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .reminder-label {
+            color: var(--text-muted);
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .stat-card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+
+        .stat-card.completed .stat-number {
+            color: var(--success);
+        }
+
+        .stat-card.overdue .stat-number {
+            color: var(--danger);
+        }
+
+        .stat-card.pending .stat-number {
+            color: var(--warning);
+        }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            padding: 4px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            width: fit-content;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .filter-btn.active {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        .filter-btn:not(.active):hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        /* Todo List */
+        .todo-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .todo-item {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .todo-item:hover {
+            box-shadow: var(--shadow-md);
+            border-color: var(--border-medium);
+        }
+
+        .todo-item.completed {
+            opacity: 0.7;
+        }
+
+        .todo-item.completed .todo-text {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .todo-item.overdue {
+            border-left: 3px solid var(--danger);
+        }
+
+        .todo-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-medium);
+            border-radius: 4px;
+            background: var(--bg-primary);
+            cursor: pointer;
+            position: relative;
+            flex-shrink: 0;
+            margin-top: 2px;
+            appearance: none;
+            transition: all 0.2s ease;
+        }
+
+        .todo-checkbox:checked {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .todo-checkbox:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .todo-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .todo-text {
+            font-size: 15px;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        .todo-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .todo-reminder {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .reminder-icon {
+            width: 14px;
+            height: 14px;
+        }
+
+        .overdue-badge {
+            background: var(--danger-light);
+            color: var(--danger);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .todo-actions {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .todo-item:hover .todo-actions {
+            opacity: 1;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 64px 24px;
+            color: var(--text-muted);
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .empty-message {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* Save Indicator */
+        .save-indicator {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--success);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            transform: translateY(100px);
+            transition: transform 0.3s ease;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .save-indicator.show {
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .container {
+                padding: 24px 16px;
+            }
+
+            .header {
+                margin-bottom: 32px;
+            }
+
+            .logo-text {
+                font-size: 20px;
+            }
+
+            .input-group {
+                flex-direction: column;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .filters {
+                flex-wrap: wrap;
+                width: 100%;
+            }
+
+            .todo-item {
+                padding: 16px;
+            }
+
+            .todo-actions {
+                opacity: 1;
+            }
+        }
+
+        /* Animations */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .todo-item.new {
+            animation: slideIn 0.3s ease;
+        }
+
+        /* Focus styles */
+        .btn:focus-visible,
+        .theme-toggle:focus-visible,
+        .filter-btn:focus-visible {
+            outline: 2px solid var(--accent-primary);
+            outline-offset: 2px;
+        }
+
+        .todo-checkbox:focus-visible {
+            outline: 2px solid var(--accent-primary);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body data-theme="light">
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">T</div>
+                <div class="logo-text">TaskFlow</div>
+            </div>
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                <span id="themeIcon">🌙</span>
+            </button>
+        </header>
+
+        <section class="input-section">
+            <div class="input-group">
+                <input 
+                    type="text" 
+                    id="todoInput" 
+                    class="input-field" 
+                    placeholder="Add a new task..." 
+                    maxlength="200"
+                >
+                <button class="btn btn-primary" onclick="addTodo()">
+                    Add Task
+                </button>
+            </div>
+            <div class="reminder-section">
+                <span class="reminder-label">Due date:</span>
+                <input 
+                    type="datetime-local" 
+                    id="reminderInput" 
+                    class="input-field" 
+                    style="flex: none; width: 200px;"
+                >
+            </div>
+        </section>
+
+        <section class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalTasks">0</div>
+                <div class="stat-label">Total</div>
+            </div>
+            <div class="stat-card completed">
+                <div class="stat-number" id="completedTasks">0</div>
+                <div class="stat-label">Completed</div>
+            </div>
+            <div class="stat-card pending">
+                <div class="stat-number" id="pendingTasks">0</div>
+                <div class="stat-label">Pending</div>
+            </div>
+            <div class="stat-card overdue">
+                <div class="stat-number" id="overdueTasks">0</div>
+                <div class="stat-label">Overdue</div>
+            </div>
+        </section>
+
+        <div class="filters">
+            <button class="filter-btn active" onclick="filterTodos('all')">All</button>
+            <button class="filter-btn" onclick="filterTodos('pending')">Pending</button>
+            <button class="filter-btn" onclick="filterTodos('completed')">Completed</button>
+            <button class="filter-btn" onclick="filterTodos('overdue')">Overdue</button>
+        </div>
+
+        <div class="todo-list" id="todoList">
+            <div class="empty-state">
+                <div class="empty-icon">📋</div>
+                <div class="empty-title">No tasks yet</div>
+                <div class="empty-message">Add your first task to get started with TaskFlow</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="save-indicator" id="saveIndicator">
+        <span>✓</span>
+        <span>Saved</span>
+    </div>
+
+    <script>
+        let todos = [];
+        let currentFilter = 'all';
+        let reminderCheckInterval;
+        let currentTheme = 'light';
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTheme();
+            loadTodos();
+            renderTodos();
+            updateStats();
+            updateThemeIcon();
+            
+            // Set up reminder checking
+            reminderCheckInterval = setInterval(checkReminders, 60000);
+            
+            // Enter key support
+            document.getElementById('todoInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    addTodo();
+                }
+            });
+
+            document.getElementById('reminderInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    addTodo();
+                }
+            });
+
+            // Request notification permission
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+        });
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.body.setAttribute('data-theme', currentTheme);
+            localStorage.setItem('theme', currentTheme);
+            updateThemeIcon();
+        }
+
+        function updateThemeIcon() {
+            const icon = document.getElementById('themeIcon');
+            icon.textContent = currentTheme === 'light' ? '🌙' : '☀️';
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                currentTheme = savedTheme;
+                document.body.setAttribute('data-theme', currentTheme);
+            }
+        }
+
+        function addTodo() {
+            const input = document.getElementById('todoInput');
+            const reminderInput = document.getElementById('reminderInput');
+            const text = input.value.trim();
+            
+            if (text === '') {
+                input.focus();
+                return;
+            }
+
+            const todo = {
+                id: Date.now(),
+                text: text,
+                completed: false,
+                createdAt: new Date().toISOString(),
+                reminder: reminderInput.value ? new Date(reminderInput.value).toISOString() : null,
+                reminded: false
+            };
+
+            todos.unshift(todo);
+            saveTodos();
+            renderTodos();
+            updateStats();
+            showSaveIndicator();
+            
+            // Clear inputs
+            input.value = '';
+            reminderInput.value = '';
+            input.focus();
+        }
+
+        function deleteTodo(id) {
+            todos = todos.filter(todo => todo.id !== id);
+            saveTodos();
+            renderTodos();
+            updateStats();
+            showSaveIndicator();
+        }
+
+        function toggleTodo(id) {
+            const todo = todos.find(t => t.id === id);
+            if (todo) {
+                todo.completed = !todo.completed;
+                todo.completedAt = todo.completed ? new Date().toISOString() : null;
+                saveTodos();
+                renderTodos();
+                updateStats();
+                showSaveIndicator();
+            }
+        }
+
+        function filterTodos(filter) {
+            currentFilter = filter;
+            
+            // Update filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            renderTodos();
+        }
+
+        function getFilteredTodos() {
+            const now = new Date();
+            
+            switch (currentFilter) {
+                case 'completed':
+                    return todos.filter(todo => todo.completed);
+                case 'pending':
+                    return todos.filter(todo => !todo.completed);
+                case 'overdue':
+                    return todos.filter(todo => 
+                        !todo.completed && 
+                        todo.reminder && 
+                        new Date(todo.reminder) < now
+                    );
+                default:
+                    return todos;
+            }
+        }
+
+        function renderTodos() {
+            const todoList = document.getElementById('todoList');
+            const filteredTodos = getFilteredTodos();
+            
+            if (filteredTodos.length === 0) {
+                const emptyMessages = {
+                    all: { icon: '📋', title: 'No tasks yet', message: 'Add your first task to get started with TaskFlow' },
+                    pending: { icon: '✅', title: 'All done!', message: 'No pending tasks. Great job!' },
+                    completed: { icon: '🎯', title: 'No completed tasks', message: 'Complete some tasks to see them here' },
+                    overdue: { icon: '⏰', title: 'Nothing overdue', message: 'You\'re staying on top of your deadlines' }
+                };
+                
+                const msg = emptyMessages[currentFilter];
+                todoList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">${msg.icon}</div>
+                        <div class="empty-title">${msg.title}</div>
+                        <div class="empty-message">${msg.message}</div>
+                    </div>
+                `;
+                return;
+            }
+
+            const todosHTML = filteredTodos.map(todo => {
+                const now = new Date();
+                const isOverdue = todo.reminder && new Date(todo.reminder) < now && !todo.completed;
+                
+                return `
+                    <div class="todo-item ${todo.completed ? 'completed' : ''} ${isOverdue ? 'overdue' : ''}">
+                        <input 
+                            type="checkbox" 
+                            class="todo-checkbox" 
+                            ${todo.completed ? 'checked' : ''} 
+                            onchange="toggleTodo(${todo.id})"
+                        >
+                        <div class="todo-content">
+                            <div class="todo-text">${escapeHtml(todo.text)}</div>
+                            ${todo.reminder ? `
+                                <div class="todo-meta">
+                                    <div class="todo-reminder">
+                                        <svg class="reminder-icon" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                                        </svg>
+                                        ${formatDateTime(todo.reminder)}
+                                    </div>
+                                    ${isOverdue ? '<span class="overdue-badge">Overdue</span>' : ''}
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div class="todo-actions">
+                            <button class="btn btn-danger" onclick="deleteTodo(${todo.id})" title="Delete task">
+                                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            todoList.innerHTML = todosHTML;
+        }
+
+        function updateStats() {
+            const total = todos.length;
+            const completed = todos.filter(todo => todo.completed).length;
+            const pending = todos.filter(todo => !todo.completed).length;
+            const now = new Date();
+            const overdue = todos.filter(todo => 
+                !todo.completed && 
+                todo.reminder && 
+                new Date(todo.reminder) < now
+            ).length;
+            
+            document.getElementById('totalTasks').textContent = total;
+            document.getElementById('completedTasks').textContent = completed;
+            document.getElementById('pendingTasks').textContent = pending;
+            document.getElementById('overdueTasks').textContent = overdue;
+        }
+
+        function checkReminders() {
+            const now = new Date();
+            
+            todos.forEach(todo => {
+                if (todo.reminder && 
+                    !todo.completed && 
+                    !todo.reminded && 
+                    new Date(todo.reminder) <= now) {
+                    
+                    if (Notification.permission === 'granted') {
+                        const notification = new Notification('Task Reminder', {
+                            body: todo.text,
+                            icon: '/favicon.ico',
+                            requireInteraction: true
+                        });
+                        
+                        notification.onclick = function() {
+                            window.focus();
+                            notification.close();
+                        };
+                    }
+                    
+                    todo.reminded = true;
+                    saveTodos();
+                    updateStats();
+                    renderTodos();
+                }
+            });
+        }
+
+        function saveTodos() {
+            try {
+                localStorage.setItem('todos', JSON.stringify(todos));
+                localStorage.setItem('lastSaved', new Date().toISOString());
+            } catch (e) {
+                console.error('Failed to save todos:', e);
+            }
+        }
+
+        function loadTodos() {
+            try {
+                const savedTodos = localStorage.getItem('todos');
+                if (savedTodos) {
+                    todos = JSON.parse(savedTodos);
+                }
+            } catch (e) {
+                console.error('Failed to load todos:', e);
+                todos = [];
+            }
+        }
+
+        function loadTodos() {
+            try {
+                const savedTodos = localStorage.getItem('todos');
+                if (savedTodos) {
+                    todos = JSON.parse(savedTodos);
+                }
+            } catch (e) {
+                console.error('Failed to load todos:', e);
+                todos = [];
+            }
+        }
+
+        function showSaveIndicator() {
+            const indicator = document.getElementById('saveIndicator');
+            indicator.classList.add('show');
+            setTimeout(() => {
+                indicator.classList.remove('show');
+            }, 2000);
+        }
+
+        function setupAutoSave() {
+            // Show save indicator when localStorage is updated
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'todos') {
+                    showSaveIndicator();
+                }
+            });
+        }
+
+        function formatDateTime(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffMs = date - now;
+            const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+            
+            if (diffMs < 0) {
+                return `${Math.abs(diffDays)} days ago`;
+            } else if (diffDays === 0) {
+                return 'Today at ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            } else if (diffDays === 1) {
+                return 'Tomorrow at ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            } else {
+                return date.toLocaleDateString() + ' at ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Request notification permission on first interaction
+        document.addEventListener('click', function() {
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+        }, { once: true });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + D to toggle theme
+            if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+                e.preventDefault();
+                toggleTheme();
+            }
+            
+            // Escape to clear input
+            if (e.key === 'Escape') {
+                document.getElementById('todoInput').value = '';
+                document.getElementById('reminderInput').value = '';
+                document.getElementById('todoInput').focus();
+            }
+        });
+
+        // Auto-resize input based on content
+        document.getElementById('todoInput').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        });
+
+        // Prevent form submission on Enter in datetime input
+        document.getElementById('reminderInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addTodo();
+            }
+        });
+    </script>
+</body>
+</html>
